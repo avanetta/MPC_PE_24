@@ -24,7 +24,4 @@ function [x_s, u_s] = compute_steady_state(params, d)
         I = eye(params.model.nx, params.model.nx);
         u_s = ((I-params.model.A)*x_s - params.model.Bd*d)\params.model.B; %gives error for singularity and dimensions connected to SS-computation
         
-        %add comment to try git
-        kjbpronerpoicjporicaporcpeaorcn
-        
 end
