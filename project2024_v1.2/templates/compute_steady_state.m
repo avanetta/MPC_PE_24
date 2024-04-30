@@ -15,14 +15,14 @@ function [x_s, u_s] = compute_steady_state(params, d)
         % --> C_ref*( C*x_s + Cd*d ) = T_ref
         % --> C*x_s + Cd*d = inv(C_ref)*T_ref
         % --> x_s = inv(C)*( inv(C_ref)*T_ref - Cd*d )
-        x_s = (params.exercise.T_ref\params.model.C_ref - params.model.Cd*d)\params.model.C;
+        x_s = (pinv(params.model.C_ref)*params.exercise.T_ref - params.model.Cd*d)\params.model.C;
         % works
 
         % steady-state input x_s = A*x_s + B*u_s + Bd*d
         % --> (I-A)*x_s - Bd*d = B*u_s
         % --> u_s = inv(B)*( (I-A)*x_s - Bd*d )
-        I = eye(params.model.nx, params.model.nx);
-        u_s = ((I-params.model.A)*x_s - params.model.Bd*d)\params.model.B; %gives error for singularity and dimensions connected to SS-computation
+        I = eye(size(params.model.A));
+        u_s = pinv(params.model.B)*((I-params.model.A)*x_s - params.model.Bd*d); %gives error for singularity and dimensions connected to SS-computation
         
         %This comment is to test github (can be deleted)
 end

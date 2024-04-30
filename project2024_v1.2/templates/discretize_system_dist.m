@@ -28,15 +28,23 @@ function [Ad, Bd, Bd_d] = discretize_system_dist(Ac, Bc, Bd_c, params)
     Bc_new = [Bc Bd_c];
     Dc_new = [Dc Cc_d];
     sys_c = ss(Ac,Bc_new,Cc,Dc_new);
-    
-    sys_d = c2d(sys_c, params.model.TimeStep);
+
+    sys_ = c2d(sys_c, params.model.TimeStep);
 
     [Ad, Bd_new, Cd, Dd_new] = ssdata(sys_d);
 
     % Split the augmented input again in input and disturbance
-    
+
     Bd = Bd_new(:,1:nu);
     Bd_d = Bd_new(:,nu+1:nu+nd);
+
+    % easier version without C & D
+    % dT = params.model.TimeStep;
+    % 
+    % [Ad, Bd] = c2d(Ac, Bc, dT);
+    % [Ad, Bd_d] = c2d(Ac, Bd_c, dT);
+
+
 
 
     
