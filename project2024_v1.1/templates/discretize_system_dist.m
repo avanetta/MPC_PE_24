@@ -15,30 +15,35 @@ function [Ad, Bd, Bd_d] = discretize_system_dist(Ac, Bc, Bd_c, params)
     % C and D are used to define a state space system !!!
 
     % Shortcut via Definiton of
+    %{
     nu = params.model.nu;
     nx = params.model.nx;
     ny = params.model.ny;
     nd = params.model.nd;
 
-    Cc = eye(nx,ny);
-    Dc = zeros(nx, nu);
-    Cc_d = zeros(nx, nd);
-
+    Cc = eye(ny,nx);
+    Dc = zeros(ny, nu);
+    Cc_d = zeros(ny, nd);
+    %}
     % We augment the system to also include the discturbance in the input
-    Bc_new = [Bc Bd_c];
-    Dc_new = [Dc Cc_d];
-    sys_c = ss(Ac,Bc_new,Cc,Dc_new);
-    
-    sys_d = c2d(sys_c, params.model.TimeStep);
 
-    [Ad, Bd_new, Cd, Dd_new] = ssdata(sys_d);
+    Bc_new = [Bc Bd_c];
+    %Dc_new = [Dc Cc_d];
+    %sys_c = ss(Ac,Bc_new,Cc,Dc_new);
+    
+    %sys_d = c2d(sys_c, params.model.TimeStep);
+
+    %[Ad, Bd_new, Cd, Dd_new] = ssdata(sys_d);
 
     % Split the augmented input again in input and disturbance
-    
+    nu = params.model.nu;
+    [Ad, Bd_new] = c2d(Ac,Bc_new, params.model.TimeStep);
     Bd = Bd_new(:,1:nu);
-    Bd_d = Bd_new(:,nu+1:nu+nd);
+    Bd_d = Bd_new(:,nu+1:end);
 
-
+    
+    
+    
     
 
 end

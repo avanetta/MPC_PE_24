@@ -69,6 +69,9 @@ function [params] = generate_params_cc()
     % AV Get discretized system matrices into params struct
     [Ac, Bc, Bd_c] = generate_system_cont_cc(params);
     [A, B, Bd] = discretize_system_dist(Ac, Bc, Bd_c, params);
+    assert(all(size(A) == [params.model.nx, params.model.nx]),'Matrix A does not have the expected size.');
+    assert(all(size(B) == [params.model.nx, params.model.nu]),'Matrix B does not have the expected size.');
+    assert(all(size(Bd) == [params.model.nx, params.model.nd]),'Matrix Bd does not have the expected size.');
     params.model.A = A;
     params.model.B = B;
     params.model.Bd = Bd;
