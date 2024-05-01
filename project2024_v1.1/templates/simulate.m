@@ -7,5 +7,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [x,u,ctrl_info] = simulate(x0, ctrl, params)
+    nx = params.model.nx;
+    nu = params.model.nu;
+    Nsim = params.exercise.SimHorizon;
+    
 
+    x = zeros(nx,Nsim+1);
+    u = zeros(nu, Nsim);
+    ctrl_info = struct('ctrl_feas', cell(1,Nsim));
+
+    x(:,1) = x0;
+
+    for i= 1:Nsim
+        % Get control input
+        [u(:,i), ctrl_info(i)] = ctrl.eval(x(:,i));
+        % Simulate system
+        x(:,i+1) = params.model.A*x(:,i) + params.model.B*u(:,i);
+    end
 end

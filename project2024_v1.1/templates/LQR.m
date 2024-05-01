@@ -14,11 +14,19 @@ classdef LQR
     methods
         function obj = LQR(Q,R,params)
             % obj.K = ...
+            % First Option: Batch Approach
+            A = params.model.A;
+            B = params.model.B;
+
+            [K,~,~] = dlqr(A, B, Q, R);
+            obj.K = K;
         end
 
         function [u, ctrl_info] = eval(obj,x)
             % u = ...
             % ctrl_info = ...
+            u = -obj.K * x;
+            ctrl_info.ctrl_feas = true;
         end
     end
 end

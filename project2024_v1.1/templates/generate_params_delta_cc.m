@@ -34,8 +34,8 @@ params_delta.exercise.u_s = u_s;
 
 % adapt intial conditions according dx_0 = x_0 - x_s
 params_delta.exercise.InitialConditionA = params.exercise.InitialConditionA - x_s;
-params_delta.exercise.InitialConditionA = params.exercise.InitialConditionB - x_s;
-params_delta.exercise.InitialConditionA = params.exercise.InitialConditionC - x_s;
+params_delta.exercise.InitialConditionB = params.exercise.InitialConditionB - x_s;
+params_delta.exercise.InitialConditionC = params.exercise.InitialConditionC - x_s;
 
 % adapt constraints according to 
 % Hx * x <= hx
