@@ -25,7 +25,7 @@ function [x_s, u_s] = compute_steady_state(params, d)
         I = eye(params.model.nx);
         u_s = pinv(params.model.B)*((I-params.model.A)*x_s - params.model.Bd*d); %gives error for singularity and dimensions connected to SS-computation
         %}
-        %This comment is to test github (can be deleted)
+
         A = params.model.A;
         I = eye(params.model.nx);
         B = params.model.B;
@@ -36,6 +36,7 @@ function [x_s, u_s] = compute_steady_state(params, d)
         Bd = params.model.Bd;
         Cd = params.model.Cd;
         Tref = params.exercise.T_ref;
+
         mat = [A-I, B;
                 Cref*C, Cref*zeros(ny,nu)];
         vec = [-Bd*d; Tref-Cref*Cd*d];
