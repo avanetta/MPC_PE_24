@@ -76,49 +76,86 @@
 % 
 % end
 
-%% This is Arnaud's try
-% What I realized what that constraigning x provides the correct dimensions
-% But the invariant set is the to big, because we miss the information on
-% input constraints.
-% I tried to create an augmented system and to reduce it in the end, but it
-% seems not to be correct.
+% %% This is Arnaud's try
+% % What I realized what that constraigning x provides the correct dimensions
+% % But the invariant set is the to big, because we miss the information on
+% % input constraints.
+% % I tried to create an augmented system and to reduce it in the end, but it
+% % seems not to be correct.
+% 
+% function [H, h] = lqr_maxPI(Q, R, params)
+% 
+%     ctrl = LQR(Q,R,params);
+%     K = ctrl.K;
+%     %define Autonomous system according to LQR law:
+%     A_LQR = params.model.A - params.model.B*K; 
+% 
+%     % Define augmented system
+%     A_aug = [A_LQR, -params.model.B; zeros(size(params.model.B')), eye(size(params.model.B, 2))];
+%     B_aug = [params.model.B; eye(size(params.model.B, 2))];
+% 
+%     sys = LTISystem('A', A_aug, 'B', B_aug);
+% 
+%     H_x = params.constraints.StateMatrix;
+%     h_x = params.constraints.StateRHS;
+% 
+%     H_u = params.constraints.InputMatrix;
+%     h_u = params.constraints.InputRHS;
+% 
+%     % Augment state constraints to include constraints on control inputs
+%     H_aug = [H_x, zeros(size(H_x, 1), size(H_u, 2)); H_u, zeros(size(H_u, 1), size(H_x, 2))];
+%     h_aug = [h_x; h_u];
+% 
+%     Px = Polyhedron(H_aug, h_aug);
+%     sys.x.with('setConstraint');
+%     sys.x.setConstraint = Px;
+% 
+%     % Get invariant set
+%     InvSet = sys.invariantSet();
+% 
+%     % Project invariant set onto original state space
+%     InvSet_projected = InvSet.projection(1:size(A_LQR, 2));
+% 
+%     % Retrieve H-representation
+%     P = Polyhedron(InvSet_projected);
+%     H = P.A;
+%     h = P.b;
+% 
+% end
 
+%% Alessio Version (with some help by RR)
+%% TODO CHANGE A BIT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function [H, h] = lqr_maxPI(Q, R, params)
-    
-    ctrl = LQR(Q,R,params);
-    K = ctrl.K;
-    %define Autonomous system according to LQR law:
-    A_LQR = params.model.A - params.model.B*K; 
+A = params.model.A;
+B = params.model.B;
 
-    % Define augmented system
-    A_aug = [A_LQR, -params.model.B; zeros(size(params.model.B')), eye(size(params.model.B, 2))];
-    B_aug = [params.model.B; eye(size(params.model.B, 2))];
+nx = params.model.nx;
+nu = params.model.nu;
 
-    sys = LTISystem('A', A_aug, 'B', B_aug);
+H_u = params.constraints.InputMatrix;
+h_u = params.constraints.InputRHS;
+H_x = params.constraints.StateMatrix;
+h_x = params.constraints.StateRHS;
 
-    H_x = params.constraints.StateMatrix;
-    h_x = params.constraints.StateRHS;
+% Define LQR-System
+K = -dlqr(A, B, Q, R);
+A_LQR = A + B*K;
+systemLQR = LTISystem('A', A_LQR);
 
-    H_u = params.constraints.InputMatrix;
-    h_u = params.constraints.InputRHS;
+% Define constraints and convert into polyhedron (input constraints become
+% new state constraints)
+A_x = [H_x; K; -K];
+b_x = [h_x; h_u];
+Xp = Polyhedron('A', A_x, 'b', b_x);
 
-    % Augment state constraints to include constraints on control inputs
-    H_aug = [H_x, zeros(size(H_x, 1), size(H_u, 2)); H_u, zeros(size(H_u, 1), size(H_x, 2))];
-    h_aug = [h_x; h_u];
+% Set same constraints into LQR-System
+systemLQR.x.with('setConstraint');
+systemLQR.x.setConstraint = Xp;
 
-    Px = Polyhedron(H_aug, h_aug);
-    sys.x.with('setConstraint');
-    sys.x.setConstraint = Px;
+% Get invariant set and H-representation
+InvSetLQR = systemLQR.invariantSet();
 
-    % Get invariant set
-    InvSet = sys.invariantSet();
-
-    % Project invariant set onto original state space
-    InvSet_projected = InvSet.projection(1:size(A_LQR, 2));
-
-    % Retrieve H-representation
-    P = Polyhedron(InvSet_projected);
-    H = P.A;
-    h = P.b;
+H = InvSetLQR.A;
+h = InvSetLQR.b;
 
 end
