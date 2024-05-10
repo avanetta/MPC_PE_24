@@ -79,10 +79,7 @@
 %% This is Arnaud's try
 % What I realized what that constraigning x provides the correct dimensions
 % But the invariant set is the to big, because we miss the information on
-% input constraints.
-% I tried to create an augmented system and to reduce it in the end, but it
-% seems not to be correct.
-
+% inpu
 function [H, h] = lqr_maxPI(Q, R, params)
     
     ctrl = LQR(Q,R,params);

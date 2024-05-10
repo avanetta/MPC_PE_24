@@ -77,7 +77,7 @@ function [params] = generate_params_cc()
     params.model.Bd = Bd;
     % AV Could also be done by this but uglier
     % [params.model.A, params.model.B, params.model.Bd] = discretize_system_dist(Ac, Bc, Bd_c, params);
-    
+
     % AV Get constraint matrices & vectors into params struct
     [H_u, h_u, H_x, h_x] = generate_constraints_cc(params);
     params.constraints.InputMatrix = H_u;
@@ -85,9 +85,7 @@ function [params] = generate_params_cc()
     params.constraints.StateMatrix = H_x;
     params.constraints.StateRHS = h_x;
     % AV Could also be done by this but uglier
-    % [params.constraints.InputMatrix, params.constraints.InputRHS, params.constraints.StateMatrix, params.constraints.StateRHS] = generate_constraints_cc(params);
-    
-    
+    % [params.constraints.InputMatrix, params.constraints.InputRHS, params.constraints.StateMatrix, params.constraints.StateRHS] = generate_constraints_cc(params); 
 
     
 end
