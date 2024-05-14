@@ -25,12 +25,8 @@ classdef MPC
             h_u = params.constraints.InputRHS;
             H_x = params.constraints.StateMatrix;
             h_x = params.constraints.StateRHS;
-
             
-            
-            % Inifinite-horizon cost matrix P is also the solution to the
-            % ARE
-            % P = zeros(nx,nx); 
+            % Inifinite-horizon cost matrix P is also the solution to the ARE
             [K,P,S] = dlqr(A, B, Q, R); %P is matrix for LQR infintite-horizon cost
             
             % The optimization variables are U and X
@@ -47,6 +43,7 @@ classdef MPC
                 constraints = [constraints, H_u*U{k} <= h_u, H_x*X{k}<=h_x];
             end
 
+            % FOR EX 14 ONLY
             % Add LQR infinite-horizon cost
             objective = objective + X{N+1}'*P*X{N+1};
 
