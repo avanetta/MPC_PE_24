@@ -26,32 +26,34 @@ classdef MPC
             H_x = params.constraints.StateMatrix;
             h_x = params.constraints.StateRHS;
 
-            X0 = params.exercise.InitialConditionA;
+            
             
             % Inifinite-horizon cost matrix P is also the solution to the
             % ARE
-            P = zeros(nx,nx); %LQR infintite-horizon cost
-            [K,P,S] = dlqr(A, B, Q, R);
+            % P = zeros(nx,nx); 
+            [K,P,S] = dlqr(A, B, Q, R); %P is matrix for LQR infintite-horizon cost
             
-            % Compute constraints and objective
+            % The optimization variables are U and X
             U = sdpvar(repmat(nu,1,N),repmat(1,1,N));
+            X = sdpvar(repmat(nx,1,N+1),repmat(1,1,N+1));
 
+            % Update constraints and obejctive function
             constraints = [];
             objective = 0;
-            x = X0;
+            X0 = X{1};
             for k = 1:N
-                x = A*x + B*U{k};
-                objective = objective + x'*Q*x + U{k}'*R*U{k};
-                % constraints = [constraints, x{k+1} == A*x{k} + B*U{k}];
-                constraints = [constraints, H_u*U{k} <= h_u, H_x*x<=h_x];
+                objective = objective + X{k}'*Q*X{k} + U{k}'*R*U{k};
+                constraints = [constraints, X{k+1} == A*X{k} + B*U{k}];
+                constraints = [constraints, H_u*U{k} <= h_u, H_x*X{k}<=h_x];
             end
 
-            %objective = objective + x'*P*x;
+            % Add LQR infinite-horizon cost
+            objective = objective + X{N+1}'*P*X{N+1};
 
 
             % Already given except for comment{
             opts = sdpsettings('verbose',1,'solver','quadprog');
-            % Standard form is optimizer(constraints, objective, sdpsettings, parameters_in, solutions_out
+            % Standard form is optimizer(constraints, objective, sdpsettings, parameters_in, wantedVariables
             obj.yalmip_optimizer = optimizer(constraints,objective,opts,X0,{U{1} objective});
             % }
         end
