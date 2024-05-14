@@ -15,6 +15,34 @@ classdef MPC_TE
         function obj = MPC_TE(Q,R,N,params)
 
             % ADD STUFF HERE
+            % Get numerical data defining system
+            A = params.model.A;
+            B = params.model.B;
+            nx = params.model.nx;
+            nu = params.model.nu;
+            
+            H_u = params.constraints.InputMatrix;
+            h_u = params.constraints.InputRHS;
+            H_x = params.constraints.StateMatrix;
+            h_x = params.constraints.StateRHS;
+            
+            % The optimization variables are U and X
+            U = sdpvar(repmat(nu,1,N),repmat(1,1,N));
+            X = sdpvar(repmat(nx,1,N+1),repmat(1,1,N+1));
+
+            % Update constraints and obejctive function
+            constraints = [];
+            objective = 0;
+            X0 = X{1};
+            for k = 1:N
+                objective = objective + X{k}'*Q*X{k} + U{k}'*R*U{k};
+                constraints = [constraints, X{k+1} == A*X{k} + B*U{k}];
+                constraints = [constraints, H_u*U{k} <= h_u, H_x*X{k}<=h_x];
+            end
+
+            % FOR EX 15 ONLY
+            % Added constraint of x(N)
+            constraints = [constraints, X{N+1} == 0];
 
             opts = sdpsettings('verbose',1,'solver','quadprog');
             obj.yalmip_optimizer = optimizer(constraints,objective,opts,X0,{U{1} objective});
