@@ -10,7 +10,7 @@
 % Between this two lines: Arnaud's code
 
 % Start by saving the used matrices and parameters
-params = generate_params_cc();
+params = generate_params_cc(); % Or should we use generate_params_delta_cc here?
 Q_star = diag(params.exercise.QdiagOpt);
 R_star = diag(params.exercise.RdiagOpt);
 N = params.exercise.SimHorizon/2; % The horizon is given to be N=30
