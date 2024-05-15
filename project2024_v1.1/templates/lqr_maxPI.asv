@@ -77,7 +77,7 @@
 % end
 
 % %% This is Arnaud's try
-% % What I realized was that constraigning x provides the correct dimensions
+% % What I realized what that constraigning x provides the correct dimensions
 % % But the invariant set is the to big, because we miss the information on
 % % input constraints.
 % % I tried to create an augmented system and to reduce it in the end, but it
@@ -123,6 +123,8 @@
 % 
 % end
 
+%% Alessio Version (with some help by RR)
+%% TODO CHANGE A BIT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 function [H, h] = lqr_maxPI(Q, R, params)
 A = params.model.A;
 B = params.model.B;
@@ -136,25 +138,25 @@ H_x = params.constraints.StateMatrix;
 h_x = params.constraints.StateRHS;
 
 % Define LQR-System
-ctrl = LQR(Q,R,params);
-K = -ctrl.K;
+ctrl = LQR(Q,R,params)
+K = -dlqr(A, B, Q, R);
 A_LQR = A + B*K;
-sys_LQR = LTISystem('A', A_LQR);
+systemLQR = LTISystem('A', A_LQR);
 
 % Define constraints and convert into polyhedron (input constraints become
 % new state constraints)
 A_x = [H_x; K; -K];
 b_x = [h_x; h_u];
-Px = Polyhedron('A', A_x, 'b', b_x);
+Xp = Polyhedron('A', A_x, 'b', b_x);
 
 % Set same constraints into LQR-System
-sys_LQR.x.with('setConstraint');
-sys_LQR.x.setConstraint = Px;
+systemLQR.x.with('setConstraint');
+systemLQR.x.setConstraint = Xp;
 
 % Get invariant set and H-representation
-InvSet = sys_LQR.invariantSet();
+InvSetLQR = systemLQR.invariantSet();
 
-H = InvSet.A;
-h = InvSet.b;
+H = InvSetLQR.A;
+h = InvSetLQR.b;
 
 end

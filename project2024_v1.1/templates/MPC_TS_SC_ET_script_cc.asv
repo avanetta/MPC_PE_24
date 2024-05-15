@@ -32,11 +32,6 @@ vt = 1e6;
 mpc1 = MPC_TS(Q_star, R_star, N, H, h, params);
 mpc2 = MPC_TS_SC_ET(Q_star, R_star, N, H, h, S, v, S_t, v_t, params);
 
-[u1, ctrl_info1] = mpc1.eval(x_b);
-[u2, ctrl_info2] = mpc2.eval(x_b);
-
-[u3, ctrl_info3] = mpc1.eval(x_c);
-[u4, ctrl_info4] = mpc2.eval(x_c);
 
 
 % Between this two lines: Arnaud's code
@@ -44,3 +39,4 @@ mpc2 = MPC_TS_SC_ET(Q_star, R_star, N, H, h, S, v, S_t, v_t, params);
 %% Save
 current_folder = fileparts(which(mfilename));
 save(fullfile(current_folder, "MPC_TS_SC_ET_script_cc.mat"), 'v', 'S', 'v_t', 'S_t');
+
