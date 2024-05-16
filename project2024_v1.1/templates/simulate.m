@@ -14,7 +14,11 @@ function [x,u,ctrl_info] = simulate(x0, ctrl, params)
 
     x = zeros(nx,Nsim+1);
     u = zeros(nu, Nsim);
+    % This was the code written for exercise 8, passes the tests,
+    % used in 27 again
     ctrl_info = struct('ctrl_feas', cell(1,Nsim));
+    % This is the adapted variant for exercise 22
+    % ctrl_info = struct('ctrl_feas', cell(1,Nsim), 'objective', cell(1,Nsim), 'solvetime', cell(1,Nsim));
 
     x(:,1) = x0;
 
