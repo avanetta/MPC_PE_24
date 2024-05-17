@@ -57,7 +57,7 @@ function [X, U, X_est, D_est, ctrl_info] = simulate_observer(x0, x0_est, d0_est,
         X(:,i+1) = params.model.A*X(:,i) + params.model.B*U(:,i) + params.model.Bd*Disturbances(:,i);
         %d
         x0_est_tilde = [X(:,i);Disturbances(:,i)];
-        x0_est_pred_tilde = obsv.eval(x0_est_tilde, U(:,i), params_aug.model.C*x0_est_tilde);
+        x0_est_pred_tilde = obsv.eval([X_est(:,i);D_est(:,i)], U(:,i), params_aug.model.C*x0_est_tilde);
         X_est(:,i+1) = x0_est_pred_tilde(1:nx);
         D_est(:,i+1) = x0_est_pred_tilde(nx+1:nx+nd);
     end
