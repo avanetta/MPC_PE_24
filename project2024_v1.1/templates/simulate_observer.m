@@ -39,11 +39,26 @@ function [X, U, X_est, D_est, ctrl_info] = simulate_observer(x0, x0_est, d0_est,
         x(:,i+1) = params.model.A*x(:,i) + params.model.B*u(:,i);
     end
     %}
+    nx = params.model.nx;
+    nd = params.model.nd;
+    nu = params.model.nu;
     Nsim = params.exercise.SimHorizon;
+    U = zeros(nu, Nsim);
+    X(:,1) = x0;
     X_est(:,1) = x0_est;
     D_est(:,1) = d0_est;
+    params_aug = generate_params_aug_obs(params);
     for i= 1:Nsim
+        %a
         [x_s,u_s] = compute_steady_state(params,D_est(:,i));
-        [u(:,i), ctrl_info(i)] = obsv.eval([X_est(:,i); D_est(:,i)],);
+        %b
+        [U(:,i), ctrl_info(i)] = ctrl.eval(X_est(:,i), D_est(:,i), x_s, u_s);
+        %c
+        X(:,i+1) = params.model.A*X(:,i) + params.model.B*U(:,i) + params.model.Bd*Disturbances(:,i);
+        %d
+        x0_est_tilde = [X(:,i);Disturbances(:,i)];
+        x0_est_pred_tilde = obsv.eval(x0_est_tilde, U(:,i), params_aug.model.C*x0_est_tilde);
+        X_est(:,i+1) = x0_est_pred_tilde(1:nx);
+        D_est(:,i+1) = x0_est_pred_tilde(nx+1:nx+nd);
     end
 end
