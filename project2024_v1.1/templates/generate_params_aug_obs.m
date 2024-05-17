@@ -24,14 +24,16 @@ function [params_aug_obs] = generate_params_aug_obs(params)
     H_x_aug = [H_x, zeros(size(H_x, 1), nd)];
     % h_x_aug = h_x;
 
-    params.model.A = A_aug;
-    params.model.B = B_aug;
-    params.model.C = C_aug;
-    params.model.nx = nx_aug;
-    params.constraints.StateMatrix = H_x_aug;
+    
     % params.constraints.StateRHS = h_x_aug;
 
     % This should be done at the end
     params_aug_obs = params;
+
+    params_aug_obs.model.A = A_aug;
+    params_aug_obs.model.B = B_aug;
+    params_aug_obs.model.C = C_aug;
+    params_aug_obs.model.nx = nx_aug;
+    params_aug_obs.constraints.StateMatrix = H_x_aug;
 
 end

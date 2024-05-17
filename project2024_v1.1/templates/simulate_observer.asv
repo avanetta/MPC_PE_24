@@ -40,10 +40,9 @@ function [X, U, X_est, D_est, ctrl_info] = simulate_observer(x0, x0_est, d0_est,
     end
     %}
     Nsim = params.exercise.SimHorizon;
-    X_est(:,1) = x0_est;
-    D_est(:,1) = d0_est;
+    [x_s,u_s] = compute_steady_state(params,d0_est);
     for i= 1:Nsim
-        [x_s,u_s] = compute_steady_state(params,D_est(:,i));
-        [u(:,i), ctrl_info(i)] = obsv.eval([X_est(:,i); D_est(:,i)],);
+        [x_s,u_s] = compute_steady_state(params,Disturbances(i));
+        [u(:,i), ctrl_info(i)] = obsv.eval(x(:,i));
     end
 end
