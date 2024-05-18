@@ -33,15 +33,8 @@ classdef MPC_TS_offsetfree
             constraints = [];
             objective = 0;
             X0 = X{1};
-
-            % "at each sampling time", means for each k (each step of the
-            % horizon)
             for k = 1:N
-                % Estimate state and disturbance x_est, d_est
-
-                % Obtain (xs , us) from steady-state target problem using disturbance estimate
                 [x_s,u_s] = compute_steady_state(params,D_est(:,k));
-
                 objective = objective + X{k}'*Q*X{k} + U{k}'*R*U{k};
                 constraints = [constraints, X{k+1} == A*X{k} + B*U{k}];
                 constraints = [constraints, H_u*U{k} <= h_u, H_x*X{k}<=h_x];
