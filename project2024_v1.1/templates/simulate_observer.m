@@ -43,6 +43,9 @@ function [X, U, X_est, D_est, ctrl_info] = simulate_observer(x0, x0_est, d0_est,
     nd = params.model.nd;
     nu = params.model.nu;
     Nsim = params.exercise.SimHorizon;
+    X = zeros(nx, Nsim + 1);
+    X_est = zeros(nx, Nsim + 1);
+    D_est = zeros(nd, Nsim + 1);
     U = zeros(nu, Nsim);
     X(:,1) = x0;
     X_est(:,1) = x0_est;
@@ -56,7 +59,7 @@ function [X, U, X_est, D_est, ctrl_info] = simulate_observer(x0, x0_est, d0_est,
         %c
         X(:,i+1) = params.model.A*X(:,i) + params.model.B*U(:,i) + params.model.Bd*Disturbances(:,i);
         %d
-        x0_est_tilde = [X(:,i);Disturbances(:,i)];
+        x0_est_tilde = [X(:,i+1);Disturbances(:,i+1)];
         x0_est_pred_tilde = obsv.eval([X_est(:,i);D_est(:,i)], U(:,i), params_aug.model.C*x0_est_tilde);
         X_est(:,i+1) = x0_est_pred_tilde(1:nx);
         D_est(:,i+1) = x0_est_pred_tilde(nx+1:nx+nd);
