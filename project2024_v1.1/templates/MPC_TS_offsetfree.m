@@ -55,7 +55,7 @@ classdef MPC_TS_offsetfree
                 % compute_steady_state
                 
 
-                objective = objective + (X{k}-x_s)'*Q*(X{k}-x_s) + (U{k}-u_s)'*R*(U{k}-u_s);
+                objective = objective + (X{k}-XS)'*Q*(X{k}-XS) + (U{k}-US)'*R*(U{k}-US);
                 constraints = [constraints, X{k+1} == A*X{k} + B*U{k} + B_d*D{k}];
                 constraints = [constraints, D{k+1} == D{k}];
                 constraints = [constraints, H_u*U{k} <= h_u, H_x*X{k}<=h_x];
@@ -63,8 +63,8 @@ classdef MPC_TS_offsetfree
             end
 
             % Add constraint of x(N) and LQR IH cost
-            constraints = [constraints, H*(X{N+1}-x_s)<= h];
-            objective = objective + (X{N+1}-x_s)'*P*(X{N+1}-x_s);
+            constraints = [constraints, H*(X{N+1}-XS)<= h];
+            objective = objective + (X{N+1}-XS)'*P*(X{N+1}-XS);
 
             % This was given
             opts = sdpsettings('verbose',1,'solver','quadprog');
